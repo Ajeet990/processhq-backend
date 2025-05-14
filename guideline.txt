@@ -1,5 +1,6 @@
 Steps to install passport
 1. create fresh project (version:12)
+2. run : php artisa generate:key
 2. run : php artisan install:passport
 3. run : rm -rf vendor/ composer.lock
 4. update composer.json (use passort version 12 i.e "laravel/passport": "^12.0")

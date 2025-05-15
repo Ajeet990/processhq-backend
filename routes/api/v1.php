@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\OrganizationController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
+    Route::get('/check-token-validity', [AuthController::class, 'checkTokenValidity']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/get-users', [AuthController::class, 'getAllUsers']);
 

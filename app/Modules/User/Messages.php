@@ -11,4 +11,6 @@ class Messages
     public static $loggedIn  = 'Logged in successfully.';
     public static $loggedOut  = 'Logged out successfully.';
     public static $invalidCredentials  = 'Invalid credentials.';
+    public static $tokenValid  = 'Token valid.';
+    public static $tokenInvalid  = 'Token invalid. Please login again.';
 }

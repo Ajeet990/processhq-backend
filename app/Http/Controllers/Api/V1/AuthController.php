@@ -26,6 +26,25 @@ class AuthController extends Controller
 
     }
 
+    public function checkTokenValidity(Request $request) {
+        try {
+            $user = Auth::user();
+            if ($user) {
+                $success = true;
+                // $user->tokens()->delete();
+                $message = UserMessages::$tokenValid;
+                $code = StatusCodes::HTTP_OK;
+                $data['user'] = $user;
+                return ApiResponse::sendResponse($success, $code, $message, $data);
+            } else {
+                return ApiResponse::sendError(false, StatusCodes::HTTP_UNAUTHORIZED, UserMessages::$tokenInvalid, null);
+            }
+        } catch (Throwable $e) {
+            $this->logError($e, request());
+            return ApiResponse::sendError(false, StatusCodes::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage(), null);
+        }
+    }
+
     public function register(Request $request)
     {
         try {

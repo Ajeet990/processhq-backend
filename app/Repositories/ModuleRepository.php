@@ -43,10 +43,14 @@ class ModuleRepository
     public function getModules($validated) : ?LengthAwarePaginator
     {
         $limit = AppConstants::DEFAULT_PER_PAGE;
-        // $limit = 3;
+        // $limit = 2;
         $query = $this->model->query();
         if (isset($validated['search'])) {
-            $query->where('name', 'like', '%' . $validated['search'] . '%');
+            $query->where(function ($q) use ($validated) {
+                $q->where('name', 'like', '%' . $validated['search'] . '%')
+                  ->orWhere('description', 'like', '%' . $validated['search'] . '%')
+                  ->orWhere('slug', 'like', '%' . $validated['search'] . '%');
+            });
         }
         if (isset($validated['status'])) {
             $query->where('status', $validated['status']);

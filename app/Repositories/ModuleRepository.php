@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Module;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Constants\AppConstants;
 
 class ModuleRepository
 {
@@ -37,5 +38,19 @@ class ModuleRepository
     public function findById(int $id): ?Module
     {
         return $this->model->find($id);
+    }
+
+    public function getModules($validated) : ?LengthAwarePaginator
+    {
+        $limit = AppConstants::DEFAULT_PER_PAGE;
+        // $limit = 3;
+        $query = $this->model->query();
+        if (isset($validated['search'])) {
+            $query->where('name', 'like', '%' . $validated['search'] . '%');
+        }
+        if (isset($validated['status'])) {
+            $query->where('status', $validated['status']);
+        }
+        return $query->orderBy('updated_at', 'DESC')->paginate($limit);
     }
 }

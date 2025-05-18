@@ -10,7 +10,9 @@ use App\Http\Requests\CreateModuleRequest;
 use GuzzleHttp\Promise\Create;
 use App\Modules\Messages\Module as ModuleMessages;
 use App\Constants\StatusCodes;
+use App\Helper\CommonHelper;
 use App\Http\Responses\ApiResponse;
+use App\Http\Requests\FilterModuleRequest;
 
 class ModuleController extends Controller
 {
@@ -37,4 +39,23 @@ class ModuleController extends Controller
             return ApiResponse::sendError(false, StatusCodes::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage(), null);
         }
     }
+
+    public function getModules(FilterModuleRequest $request)
+    {
+        try {
+            $validated = $request->validated();
+            $modules = $this->moduleRepo->getModules($validated);
+            $pagination = CommonHelper::getPaginationData($modules);
+            $data['modules'] = $modules->items();
+            $data['pagination'] = $pagination;
+            $success = true;
+            $message = ModuleMessages::$moduleList;
+            $statusCode = StatusCodes::HTTP_OK;
+            return ApiResponse::sendResponse($success, $statusCode, $message, $data);
+        } catch (Throwable $e) {
+            $this->logError($e);
+            return ApiResponse::sendError(false, StatusCodes::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage(), null);
+        }
+    }
+
 }

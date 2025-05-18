@@ -43,4 +43,31 @@ class OrganizationController extends Controller
             return ApiResponse::sendError(false,StatusCodes::HTTP_INTERNAL_SERVER_ERROR,$e->getMessage(),null);
         }
     }
+
+    public function getOrganization(Request $request)
+    {
+        try {
+            // $validatedData = $request->validated();
+            $success = false;
+            $message = OrganizationMessages::$noOrgDataFound;
+            $statusCode = StatusCodes::HTTP_INTERNAL_SERVER_ERROR;
+            $orgData = $this->orgRepo->getAll();
+            $data= null;
+            if (!empty($orgData)) {
+                $success = true;
+                $message = OrganizationMessages::$orgDataFound;
+                $statusCode = StatusCodes::HTTP_OK;
+                $data = $orgData;
+
+                return ApiResponse::sendResponse($success, $statusCode, $message, $data);
+            } else {
+
+                return ApiResponse::sendError($success, $statusCode, $message, $data);
+            }
+        } catch (Throwable $e) {
+            $this->logError($e, $request);
+
+            return ApiResponse::sendError(false,StatusCodes::HTTP_INTERNAL_SERVER_ERROR,$e->getMessage(),null);
+        }
+    }
 }

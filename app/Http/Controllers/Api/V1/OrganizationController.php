@@ -15,10 +15,7 @@ use Throwable;
 
 class OrganizationController extends Controller
 {
-    public function __construct(private OrganizationRepository $orgRepo)
-    {
-
-    }
+    public function __construct(private OrganizationRepository $orgRepo) {}
     public function createOrganization(CreateOrganizationRequest $request)
     {
         try {
@@ -40,7 +37,7 @@ class OrganizationController extends Controller
             }
         } catch (Throwable $e) {
             $this->logError($e, $request);
-            return ApiResponse::sendError(false,StatusCodes::HTTP_INTERNAL_SERVER_ERROR,$e->getMessage(),null);
+            return ApiResponse::sendError(false, StatusCodes::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage(), null);
         }
     }
 
@@ -52,7 +49,7 @@ class OrganizationController extends Controller
             $message = OrganizationMessages::$noOrgDataFound;
             $statusCode = StatusCodes::HTTP_INTERNAL_SERVER_ERROR;
             $orgData = $this->orgRepo->getAll();
-            $data= null;
+            $data = null;
             if (!empty($orgData)) {
                 $success = true;
                 $message = OrganizationMessages::$orgDataFound;
@@ -67,7 +64,39 @@ class OrganizationController extends Controller
         } catch (Throwable $e) {
             $this->logError($e, $request);
 
-            return ApiResponse::sendError(false,StatusCodes::HTTP_INTERNAL_SERVER_ERROR,$e->getMessage(),null);
+            return ApiResponse::sendError(false, StatusCodes::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage(), null);
+        }
+    }
+
+    public function deleteOrganization(Request $request)
+    {
+        try {
+            $data = null;
+
+            if (!$request->has('id')) {
+
+                $message = OrganizationMessages::$orgIdRequired;
+
+                return ApiResponse::sendError(false, $statusCode, StatusCodes::HTTP_BAD_REQUEST, $data);
+            }
+
+            $id = $request->input('id');
+            $organization = $this->orgRepo->findById($id);
+
+            if (!$organization) {
+
+                return ApiResponse::sendError(false, StatusCodes::HTTP_NOT_FOUND, OrganizationMessages::$orgDataFound, $data);
+            }
+
+            $deletion = $organization->delete();
+
+            if (!$deletion) {
+                return ApiResponse::sendError(false, StatusCodes::HTTP_CONFLICT, OrganizationMessages::$organizationNotDeleted, $data);
+            }
+
+            return ApiResponse::sendResponse(true, StatusCodes::HTTP_OK, OrganizationMessages::$orgDeleteSuccess, $data);
+        } catch (Throwable $e) {
+            $this->logError($e, $request);
         }
     }
 }

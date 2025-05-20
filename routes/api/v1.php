@@ -17,7 +17,7 @@ Route::middleware('auth:api')->group(function () {
     // Organization routes
     Route::controller(OrganizationController::class)->prefix('organization')->group(function () {
         Route::post('/create', 'createOrganization');
-        Route::get('/get', "getOrganization");
+        Route::get('/get/{id?}', "getOrganization");
         Route::delete('/delete/{id}', 'deleteOrganization');
     });
 

@@ -14,6 +14,8 @@ class StatusCodes
     public const HTTP_UNAUTHORIZED = 401;
     public const HTTP_FORBIDDEN = 403;
     public const HTTP_NOT_FOUND = 404;
+    public const HTTP_CONFLICT = 409;
+
 
     // HTTP Server Errors
     public const HTTP_INTERNAL_SERVER_ERROR = 500;

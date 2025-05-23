@@ -24,7 +24,7 @@ Route::middleware('auth:api')->group(function () {
     // Module routes
     Route::controller(ModuleController::class)->prefix('module')->group(function () {
         Route::post('/create', 'createModule');
-        Route::get('/get-all', 'getAllModules');
+        Route::get('/list', 'getModules');
         Route::get('/get/{id}', 'getModuleById');
         Route::put('/update/{id}', 'updateModule');
         Route::delete('/delete/{id}', 'deleteModule');

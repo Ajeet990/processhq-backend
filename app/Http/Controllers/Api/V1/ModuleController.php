@@ -13,16 +13,17 @@ use App\Helper\CommonHelper;
 use App\Http\Responses\ApiResponse;
 use App\Http\Requests\FilterModuleRequest;
 use Illuminate\Support\Facades\Validator;
+use App\Services\ModuleService;
 
 class ModuleController extends Controller
 {
-    public function __construct(private ModuleRepository $moduleRepo) {}
+    public function __construct(private ModuleService $moduleService) {}
 
     public function createModule(CreateModuleRequest $request)
     {
         try {
             $validated = $request->validated();
-            $module = $this->moduleRepo->create($validated);
+            $module = $this->moduleService->create($validated);
             $success = false;
             $message = ModuleMessages::$moduleNotCreated;
             $statusCode = StatusCodes::HTTP_INTERNAL_SERVER_ERROR;
@@ -44,7 +45,7 @@ class ModuleController extends Controller
     {
         try {
             $validated = $request->validated();
-            $modules = $this->moduleRepo->getModules($validated);
+            $modules = $this->moduleService->getModules($validated);
             $pagination = CommonHelper::getPaginationData($modules);
             $data['modules'] = $modules->items();
             $data['pagination'] = $pagination;
@@ -68,17 +69,16 @@ class ModuleController extends Controller
                 return ApiResponse::sendError(false, StatusCodes::HTTP_BAD_REQUEST, $validated->errors()->first(), null);
             }
             $validated = $validated->validated();
-            $module = $this->moduleRepo->findById($validated['id']);
+            $moduleRst = $this->moduleService->deleteModule($validated['id']);
             $success = false;
             $message = ModuleMessages::$moduleNotDeleted;
             $statusCode = StatusCodes::HTTP_NOT_FOUND;
             $data['module'] = null;
-            if ($module) {
-                $module->delete();
+            if ($moduleRst['success']) {
                 $success = true;
                 $message = ModuleMessages::$moduleDeleted;
                 $statusCode = StatusCodes::HTTP_OK;
-                $data['module'] = $module;
+                $data['module'] = $moduleRst['module_id'];
             }
             
             return ApiResponse::sendResponse($success, $statusCode, $message, $data);

@@ -6,8 +6,9 @@ use App\Models\Module;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Constants\AppConstants;
+use App\Interfaces\ModuleRepositoryInterface;
 
-class ModuleRepository
+class ModuleRepository implements ModuleRepositoryInterface
 {
     protected Module $model;
 
@@ -29,7 +30,6 @@ class ModuleRepository
         return false;
     }
 
-    // 1. Basic CRUD
     public function getAll(): Collection
     {
         return $this->model->all();
@@ -40,10 +40,14 @@ class ModuleRepository
         return $this->model->find($id);
     }
 
-    public function getModules($validated) : ?LengthAwarePaginator
+    public function deleteModule(int $id): bool
+    {
+        return $this->model->where('id', $id)->delete();
+    }
+
+    public function getModules($validated) : LengthAwarePaginator
     {
         $limit = AppConstants::DEFAULT_PER_PAGE;
-        // $limit = 2;
         $query = $this->model->query();
         if (isset($validated['search'])) {
             $query->where(function ($q) use ($validated) {

@@ -28,6 +28,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/get/{id}', 'getModuleById');
         Route::put('/update/{id}', 'updateModule');
         Route::delete('/delete/{id}', 'deleteModule');
+        Route::put('/toggle-status/{id}', 'toggleModuleStatus');
     });
 
 });

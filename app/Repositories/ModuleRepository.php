@@ -61,4 +61,9 @@ class ModuleRepository implements ModuleRepositoryInterface
         }
         return $query->orderBy('updated_at', 'DESC')->paginate($limit);
     }
+
+    public function toggleStatus(int $id, string $status): bool
+    {
+        return $this->model->where('id', $id)->update(['status' => $status]);
+    }
 }

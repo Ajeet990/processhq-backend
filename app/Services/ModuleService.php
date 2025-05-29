@@ -32,10 +32,17 @@ class ModuleService
     {
         $module = $this->findById($id);
         if (!$module) {
-            return ['success' => false, 'message' => 'Module not found'];
+            return ['success' => false, 'message' => 'Module not found', 'module_id' => $id];
         }
 
         $this->moduleRepo->deleteModule($id);
-        return ['success' => true, 'message' => 'Module deleted'];
+        return ['success' => true, 'message' => 'Module deleted', 'module_id' => $id];
     }
+
+    public function toggleStatus(Module $module): bool
+    {
+        $status = $module->status === '1' ? '0' : '1';
+        return $this->moduleRepo->toggleStatus($module->id, $status);
+    }
+
 }

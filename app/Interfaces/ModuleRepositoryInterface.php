@@ -10,5 +10,6 @@ interface ModuleRepositoryInterface
     public function findById(int $id): ?Module;
     public function deleteModule(int $id): bool;
     public function getModules(array $filters): LengthAwarePaginator;
+    public function toggleStatus(int $id, string $status): bool;
 }
 

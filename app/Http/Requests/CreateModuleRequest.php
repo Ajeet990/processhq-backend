@@ -25,7 +25,7 @@ class CreateModuleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:modules,name',
             'description' => 'required|string|max:255',
             'status' => 'required|in:0,1',
             'slug' => 'required|string|max:255|unique:modules,slug',

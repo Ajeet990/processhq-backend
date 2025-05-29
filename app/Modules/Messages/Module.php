@@ -10,4 +10,7 @@ class Module
     public static $moduleList  = 'List of modules.';
     public static $moduleDeleted  = 'Module deleted successfully.';
     public static $moduleNotDeleted  = 'Unable to delete module.';
+    public static $moduleNotFound  = 'Module not found.';
+    public static $moduleStatusUpdated  = 'Module status updated successfully.';
+    public static $moduleStatusNotUpdated  = 'Module status not updated.';
 }

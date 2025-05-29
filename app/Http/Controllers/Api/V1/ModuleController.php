@@ -88,4 +88,35 @@ class ModuleController extends Controller
         }
     }
 
+    public function toggleModuleStatus($id)
+    {
+        try {
+            $validated = Validator::make(['id' => $id], [
+                'id' => 'required|integer|exists:modules,id',
+            ]);
+            if ($validated->fails()) {
+                return ApiResponse::sendError(false, StatusCodes::HTTP_BAD_REQUEST, $validated->errors()->first(), null);
+            }
+            $validated = $validated->validated();
+            $module = $this->moduleService->findById($validated['id']);
+            if (!$module) {
+                return ApiResponse::sendError(false, StatusCodes::HTTP_NOT_FOUND, ModuleMessages::$moduleNotFound, null);
+            }
+            // $module->status = !$module->status;
+            // $module->save();
+            $toggleStatus = $this->moduleService->toggleStatus($module);
+            if (!$toggleStatus) {
+                return ApiResponse::sendError(false, StatusCodes::HTTP_INTERNAL_SERVER_ERROR, ModuleMessages::$moduleStatusNotUpdated, null);
+            }
+            $success = true;
+            $message = ModuleMessages::$moduleStatusUpdated;
+            $statusCode = StatusCodes::HTTP_OK;
+            $data['module'] = $module;
+            return ApiResponse::sendResponse($success, $statusCode, $message, $data);
+        } catch (Throwable $e) {
+            $this->logError($e);
+            return ApiResponse::sendError(false, StatusCodes::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage(), null);
+        }
+    }
+
 }

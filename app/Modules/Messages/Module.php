@@ -13,4 +13,7 @@ class Module
     public static $moduleNotFound  = 'Module not found.';
     public static $moduleStatusUpdated  = 'Module status updated successfully.';
     public static $moduleStatusNotUpdated  = 'Module status not updated.';
+    public static $moduleFound = 'Module found.';
+    public static $moduleNotUpdated = 'Module not updated.';
+    public static $invalidModuleId = 'Invalid module ID provided.';
 }

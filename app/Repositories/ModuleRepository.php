@@ -66,4 +66,9 @@ class ModuleRepository implements ModuleRepositoryInterface
     {
         return $this->model->where('id', $id)->update(['status' => $status]);
     }
+
+    public function updateModule(int $id, array $data): bool
+    {
+        return $this->model->where('id', $id)->update($data);
+    }
 }

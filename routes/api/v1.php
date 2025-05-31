@@ -25,10 +25,11 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(ModuleController::class)->prefix('module')->group(function () {
         Route::post('/create', 'createModule');
         Route::get('/list', 'getModules');
-        Route::get('/get/{id}', 'getModuleById');
+        // Route::get('/get/{id}', 'getModuleById');
         Route::put('/update/{id}', 'updateModule');
         Route::delete('/delete/{id}', 'deleteModule');
         Route::put('/toggle-status/{id}', 'toggleModuleStatus');
+        Route::get('/get-module-by-id/{id}', 'getModuleById');
     });
 
 });

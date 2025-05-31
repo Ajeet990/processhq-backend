@@ -45,4 +45,9 @@ class ModuleService
         return $this->moduleRepo->toggleStatus($module->id, $status);
     }
 
+    public function updateModule(int $id, array $data): bool
+    {
+        return $this->moduleRepo->updateModule($id, $data);
+    }
+
 }

@@ -5,8 +5,10 @@ namespace App\Repositories;
 use App\Models\Organization;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Interfaces\OrganizationRepositoryInterface;
+use App\Constants\AppConstants;
 
-class OrganizationRepository
+class OrganizationRepository implements OrganizationRepositoryInterface
 {
     protected  $model;
 
@@ -15,9 +17,18 @@ class OrganizationRepository
         $this->model = new Organization();
     }
 
-    public function getAll(): Collection
+    public function getAll($data): LengthAwarePaginator
     {
-        return $this->model->all();
+        $limit = AppConstants::DEFAULT_PER_PAGE;
+        $query = $this->model->query();
+        if (!empty($data['search'])) {
+            $query->where('name', 'like', '%' . $data['search'] . '%');
+        }
+        if (array_key_exists('status', $data)) {
+            $query->where('status', $data['status']);
+        }
+
+        return $query->orderBy('updated_at', 'desc')->paginate($limit);
     }
 
     public function findById(int $id): ?Organization

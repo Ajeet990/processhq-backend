@@ -15,6 +15,7 @@ class StatusCodes
     public const HTTP_FORBIDDEN = 403;
     public const HTTP_NOT_FOUND = 404;
     public const HTTP_CONFLICT = 409;
+    public const HTTP_UNPROCESSABLE_ENTITY = 422;
 
 
     // HTTP Server Errors

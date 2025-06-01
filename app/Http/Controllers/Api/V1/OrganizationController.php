@@ -12,20 +12,24 @@ use App\Constants\StatusCodes;
 use App\Constants\AppConstants;
 use App\Http\Responses\ApiResponse;
 use Throwable;
+use App\Services\OrganizationService;
+use App\Helper\CommonHelper;
+use Illuminate\Support\Facades\Validator;
 
 class OrganizationController extends Controller
 {
-    public function __construct(private OrganizationRepository $orgRepo) {}
+    // public function __construct(private OrganizationRepository $orgRepo) {}
+    public function __construct(private OrganizationService $orgService) {}
+
     public function createOrganization(CreateOrganizationRequest $request)
     {
         try {
             $validatedData = $request->validated();
-            // dd($validatedData);
             $success = false;
             $message = OrganizationMessages::$organizationNotCreated;
             $statusCode = StatusCodes::HTTP_INTERNAL_SERVER_ERROR;
             $data = null;
-            $createdOrganization = $this->orgRepo->create($validatedData);
+            $createdOrganization = $this->orgService->create($validatedData);
             if ($createdOrganization) {
                 $success = true;
                 $message = OrganizationMessages::$organizationCreated;
@@ -48,8 +52,25 @@ class OrganizationController extends Controller
             $message = OrganizationMessages::$noOrgDataFound;
             $statusCode = StatusCodes::HTTP_NOT_FOUND;
             $data = null;
+            $validator = Validator::make($request->all(), [
+                'id' => 'nullable|integer|exists:organizations,id',
+                'search' => 'nullable|string|max:255',
+                'status' => 'nullable|in:0,1',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], StatusCodes::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            // Get validated data
+            $validatedData = $validator->validated();
+            // dd("sss", $validatedData);
             if ($id) {
-                $orgData = $this->orgRepo->findById($id);
+                $orgData = $this->orgService->findById($id);
 
                 if ($orgData) {
                     $success = true;
@@ -58,13 +79,16 @@ class OrganizationController extends Controller
                     $data = $orgData;
                 }
             } else {
-                $orgData = $this->orgRepo->getAll();
+                $orgData = $this->orgService->getAll($validatedData);
+                $pagination = CommonHelper::getPaginationData($orgData);
+                $data['organizations'] = $orgData->items();
+                $data['pagination'] = $pagination;
 
                 if (!empty($orgData)) {
                     $success = true;
                     $message = OrganizationMessages::$orgDataFound;
                     $statusCode = StatusCodes::HTTP_OK;
-                    $data = $orgData;
+                    // $data = $data;
                 }
             }
 
@@ -93,10 +117,10 @@ class OrganizationController extends Controller
 
                 $message = OrganizationMessages::$orgIdRequired;
 
-                return ApiResponse::sendError(false, $statusCode, StatusCodes::HTTP_BAD_REQUEST, $data);
+                return ApiResponse::sendError(false, StatusCodes::HTTP_BAD_REQUEST, $message, $data);
             }
 
-            $organization = $this->orgRepo->findById($id);
+            $organization = $this->orgService->findById($id);
 
             if (!$organization) {
 
